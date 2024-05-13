@@ -1,0 +1,61 @@
+#include <LiquidCrystal.h>
+#include <OneWire.h>
+
+// Define os pinos do LCD
+const int rs = 12;
+const int en = 11;
+const int d4 = 5;
+const int d5 = 4;
+const int d6 = 3;
+const int d7 = 2;
+
+// Define o pino do sensor de temperatura
+const int ds18b20Pin = 8;
+
+// Inicializa o display LCD
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+// Inicializa o sensor de temperatura
+OneWire ds18b20(ds18b20Pin);
+
+void setup() {
+  // Inicializa o LCD
+  lcd.begin(16, 2);
+
+  // Configura o sensor de temperatura
+  ds18b20.begin();
+}
+
+void loop() {
+  // Lê a temperatura do sensor
+  float temperature = readTemperature();
+
+  // Exibe a temperatura no display LCD
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Temperatura:");
+  lcd.setCursor(0, 1);
+  lcd.print(temperature);
+  lcd.print(" °C");
+
+  // Aguarda 1 segundo
+  delay(1000);
+}
+
+float readTemperature() {
+  // Cria um ponteiro para o primeiro sensor de temperatura
+  OneWire::DeviceAddress tempDeviceAddress;
+
+  // Procura por sensores de temperatura
+  if (ds18b20.search(tempDeviceAddress)) {
+    // Converte a temperatura para o formato float
+    float temperature = ds18b20.readTemperature(tempDeviceAddress);
+
+    // Retorna o valor da temperatura
+    return temperature;
+  } else {
+    // Retorna o valor 0 se não encontrar nenhum sensor
+    return 0;
+  }
+}
+
